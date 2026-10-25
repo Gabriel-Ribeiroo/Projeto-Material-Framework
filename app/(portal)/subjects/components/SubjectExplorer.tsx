@@ -11,8 +11,9 @@ import { SubjectCard } from './SubjectCard'
 import { SubjectsSkeleton } from './SubjectsSkeleton'
 
 export function SubjectExplorer() {
-  const { loading, cleared, clear, restore, search, setSearch, results, hasSubjects, drop } = useSubjectSearch()
-  const dropFlow = useSubjectDrop(drop)
+  const { loading, cleared, clear, restore, search, setSearch, results, hasSubjects, drop, undrop } =
+    useSubjectSearch()
+  const dropFlow = useSubjectDrop(drop, undrop)
   const empty = cleared || !hasSubjects
 
   return (
@@ -81,8 +82,8 @@ export function SubjectExplorer() {
         onConfirm={dropFlow.confirm}
         onClose={dropFlow.cancel}
       >
-        Você deixará de frequentar a disciplina neste semestre e perderá a vaga na turma. Esta operação não poderá
-        ser desfeita.
+        Você deixará de frequentar a disciplina neste semestre e perderá a vaga na turma. Logo após trancar, você
+        ainda terá alguns segundos para desfazer.
       </ConfirmDialog>
     </div>
   )

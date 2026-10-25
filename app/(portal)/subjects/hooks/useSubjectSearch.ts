@@ -23,6 +23,7 @@ export function useSubjectSearch() {
   }, [reload])
 
   const drop = useCallback((code: string) => setDroppedCodes(codes => [...codes, code]), [])
+  const undrop = useCallback((code: string) => setDroppedCodes(codes => codes.filter(item => item !== code)), [])
 
   const enrolled = useMemo(
     () => (cleared ? [] : (schedule.data ?? []).filter(subject => !droppedCodes.includes(subject.code))),
@@ -49,5 +50,6 @@ export function useSubjectSearch() {
     /** False once every subject was cleared or dropped, as opposed to filtered out. */
     hasSubjects: enrolled.length > 0,
     drop,
+    undrop,
   }
 }

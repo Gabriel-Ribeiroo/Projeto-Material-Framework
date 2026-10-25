@@ -14,6 +14,8 @@ type FieldProps = {
   type?: string
   autoComplete?: string
   inputMode?: ComponentProps<'input'>['inputMode']
+  maxLength?: number
+  placeholder?: string
 }
 
 export function Field({
@@ -28,6 +30,8 @@ export function Field({
   type = 'text',
   autoComplete,
   inputMode,
+  maxLength,
+  placeholder,
 }: FieldProps) {
   const errorId = useId()
 
@@ -54,6 +58,8 @@ export function Field({
           disabled={disabled}
           autoComplete={autoComplete}
           inputMode={inputMode}
+          maxLength={maxLength}
+          placeholder={placeholder}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? errorId : undefined}
           className="focus-ring w-full rounded-xl border border-border bg-card py-3 pl-10 pr-3 text-sm font-medium text-foreground transition duration-200 hover:border-input disabled:cursor-not-allowed disabled:opacity-60 aria-invalid:border-destructive aria-invalid:focus-visible:outline-destructive"

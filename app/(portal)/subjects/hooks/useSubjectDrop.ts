@@ -9,10 +9,11 @@ const DROP_DELAY = 1500
 
 /**
  * Dropping a subject is destructive, so it goes through a confirmation dialog
- * first. `target` outlives `open` on purpose: the dialog keeps its text while
- * it animates out.
+ * first, and the notice that follows still offers "Desfazer" for a few seconds.
+ * `target` outlives `open` on purpose: the dialog keeps its text while it
+ * animates out.
  */
-export function useSubjectDrop(onDropped: (code: string) => void) {
+export function useSubjectDrop(onDropped: (code: string) => void, onRestored: (code: string) => void) {
   const { showToast } = useToast()
   const [target, setTarget] = useState<Subject | null>(null)
   const [open, setOpen] = useState(false)
@@ -36,8 +37,14 @@ export function useSubjectDrop(onDropped: (code: string) => void) {
     setDropping(false)
     setOpen(false)
     onDropped(target.code)
-    showToast(`${target.name} foi trancada.`)
-  }, [target, onDropped, showToast])
+    showToast(`${target.name} foi trancada.`, 'success', {
+      label: 'Desfazer',
+      onAction: () => {
+        onRestored(target.code)
+        showToast(`${target.name} voltou para a sua grade.`, 'info')
+      },
+    })
+  }, [target, onDropped, onRestored, showToast])
 
   return { target, open, dropping, request, cancel, confirm }
 }

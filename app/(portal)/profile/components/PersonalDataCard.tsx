@@ -53,7 +53,16 @@ export function PersonalDataCard({
       <div className="mt-6 grid gap-5 sm:grid-cols-2">
         <Field label="Nome completo" icon={User} autoComplete="name" {...field('name')} />
         <Field label="E-mail" icon={Mail} type="email" autoComplete="email" {...field('email')} />
-        <Field label="Telefone" icon={Phone} type="tel" inputMode="tel" autoComplete="tel" {...field('phone')} />
+        <Field
+          label="Telefone"
+          icon={Phone}
+          type="tel"
+          inputMode="tel"
+          autoComplete="tel"
+          maxLength={15}
+          placeholder="(11) 99999-8888"
+          {...field('phone')}
+        />
         <Field label="Cidade" icon={MapPin} autoComplete="address-level2" {...field('city')} />
       </div>
 

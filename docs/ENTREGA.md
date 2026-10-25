@@ -33,6 +33,15 @@ Prints: [`screenshots/antes/`](screenshots/antes/) e [`screenshots/depois/`](scr
 | **Desafio B — Tratamento de erro** | Perfil: salvar sem internet mostra um *Alert* com "Tentar novamente". |
 | **Desafio C — Confirmação de exclusão** | Disciplinas: "⋯" → "Trancar disciplina" → *Dialog*. Também em "Limpar dados", em todas as telas. |
 
+### Melhorias adicionais (complementos liberados pelo professor)
+
+| Melhoria | O que faz | Por que melhora a experiência |
+|---|---|---|
+| **"Desfazer" no Snackbar** | Depois de trancar uma disciplina, o Snackbar oferece **Desfazer** por 7 s. A disciplina volta para a grade, na mesma posição. | Dois níveis de proteção: o *Dialog* evita o erro antes da ação, e o *Desfazer* permite corrigir logo depois, sem precisar de um novo fluxo. O aviso fica mais tempo na tela porque tem uma ação para alcançar. |
+| **Aviso de alterações não salvas** | Com o perfil editado e não salvo, clicar em outro item do menu abre o *Dialog* "Sair sem salvar?" ("Continuar editando" / "Sair sem salvar"). Fechar ou recarregar a aba mostra o aviso do próprio navegador. Sem alterações, a navegação é direta. | Prevenção de erro: o usuário não perde o que digitou por um clique distraído. O aviso só aparece quando há algo a perder, sem interromper à toa. |
+| **Máscara de telefone** | Formata enquanto a pessoa digita: `(11) 99999-8888` (celular) ou `(11) 3333-4444` (fixo). Ignora letras e limita a 11 dígitos. | Mostra o formato esperado sem exigir que o usuário pense nele, e reduz erros de validação. |
+| **"Pular para o conteúdo"** | Primeiro item do TAB em todas as telas. Fica escondido e aparece no topo ao receber foco. ENTER leva o foco direto ao conteúdo da página. | Quem navega por teclado ou leitor de tela não precisa passar pelos itens do menu lateral e do cabeçalho em toda página. |
+
 ### Sobre a biblioteca
 
 O exemplo da atividade usa MUI. O EduConnect já tinha um design system próprio com Tailwind CSS e tokens de tema. Por isso, os componentes Material (Button, Dialog, Snackbar, Alert, CircularProgress, TextField) foram implementados sobre esses tokens, sem misturar duas bibliotecas de estilo. O princípio cobrado na atividade é o mesmo: nenhuma cor fixa espalhada pelo código, e todas as telas usam os mesmos componentes.
@@ -55,7 +64,10 @@ O exemplo da atividade usa MUI. O EduConnect já tinha um design system próprio
 2. **Validação:** apague o nome ou digite um e-mail sem domínio e saia do campo.
 3. **Loading e feedback:** altere a cidade → "Salvar alterações" → spinner por 2 s → Snackbar de sucesso.
 4. **Erro (Desafio B):** DevTools → aba *Network* → *Offline*. Altere um campo e salve. Aparece o Alert com "Tentar novamente". Volte para *No throttling* e clique nele.
-5. **Confirmação (Desafio C):** em `/subjects`, clique em "⋯" num card → "Trancar disciplina".
+5. **Confirmação (Desafio C):** em `/subjects`, clique em "⋯" num card → "Trancar disciplina" → confirme. No Snackbar, clique em **Desfazer**.
+   - **Sair sem salvar:** em `/profile`, altere um campo e clique em "Notas" no menu.
+   - **Máscara:** digite só números no telefone.
+   - **Pular para o conteúdo:** recarregue a página e aperte TAB uma vez.
 6. **Empty state (Desafio A):** "Limpar dados" em qualquer tela → confirmar.
 7. **Dark mode:** ícone de sol/lua no cabeçalho.
 8. **Teclado:** TAB / SHIFT+TAB percorrem todos os controles com contorno de foco visível. ESC fecha menus, diálogo e menu lateral. ENTER/SPACE acionam botões e SPACE marca as disciplinas na matrícula.

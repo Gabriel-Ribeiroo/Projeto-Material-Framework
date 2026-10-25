@@ -4,6 +4,7 @@ import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { student } from '@/data/student'
 import { SIMULATED_SAVE_DELAY, simulateRequest, useSimulatedFetch } from '@/hooks/useSimulatedFetch'
 import { useToast } from '@/hooks/useToast'
+import { useUnsavedChanges } from '../../hooks/useUnsavedChanges'
 
 export type ProfileFormValues = {
   name: string
@@ -29,6 +30,22 @@ const initialForm: ProfileFormValues = {
 }
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+/**
+ * Formats a Brazilian phone as it is typed: (11) 9999-8888 for landlines and
+ * (11) 99999-8888 for mobiles. Separators only appear once a digit follows
+ * them, so deleting never gets stuck on a parenthesis or a dash.
+ */
+export function formatPhone(value: string) {
+  const digits = value.replace(/\D/g, '').slice(0, 11)
+  const area = digits.slice(0, 2)
+
+  if (digits.length === 0) return ''
+  if (digits.length <= 2) return `(${digits}`
+  if (digits.length <= 6) return `(${area}) ${digits.slice(2)}`
+  if (digits.length <= 10) return `(${area}) ${digits.slice(2, 6)}-${digits.slice(6)}`
+  return `(${area}) ${digits.slice(2, 7)}-${digits.slice(7)}`
+}
 
 /** Messages say what is wrong and how to fix it, not just "invalid". */
 function validate(form: ProfileFormValues): ProfileFormErrors {
@@ -90,10 +107,15 @@ export function useProfileForm() {
     return visible
   }, [allErrors, touched, submitted])
 
-  const dirty = editableFields.some(field => form[field] !== saved[field])
+  /** Once the screen is cleared the edits are gone, so there is nothing left to lose. */
+  const dirty = !cleared && editableFields.some(field => form[field] !== saved[field])
+
+  // Leaving the page with unsaved edits asks for confirmation first.
+  useUnsavedChanges(dirty)
 
   const update = useCallback(
-    (key: EditableField) => (value: string) => setForm(current => ({ ...current, [key]: value })),
+    (key: EditableField) => (value: string) =>
+      setForm(current => ({ ...current, [key]: key === 'phone' ? formatPhone(value) : value })),
     [],
   )
 
