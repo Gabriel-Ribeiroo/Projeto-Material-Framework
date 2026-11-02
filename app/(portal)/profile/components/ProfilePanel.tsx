@@ -1,6 +1,5 @@
 'use client'
 
-import { UserRound } from 'lucide-react'
 import { ClearDataButton } from '@/components/ClearDataButton'
 import { EmptyState } from '@/components/EmptyState'
 import { PageHeading } from '@/components/PageHeading'
@@ -40,7 +39,7 @@ export function ProfilePanel() {
         <ProfileSkeleton />
       ) : cleared ? (
         <EmptyState
-          icon={UserRound}
+          illustration="empty"
           title="Seus dados não estão carregados"
           description="O cadastro foi limpo desta tela. Recarregue para editar novamente suas informações de contato."
           actionLabel="Recarregar cadastro"

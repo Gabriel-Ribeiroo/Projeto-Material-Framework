@@ -29,7 +29,7 @@ export function LoginAside() {
         alt=""
         width={800}
         height={712}
-        className="animate-fade-up relative mx-auto my-auto w-full max-w-sm py-8 xl:max-w-md"
+        className="animate-fade-up relative mx-auto my-auto w-full max-w-xs py-8 xl:max-w-sm"
       />
 
       <div className="animate-fade-up relative max-w-md">

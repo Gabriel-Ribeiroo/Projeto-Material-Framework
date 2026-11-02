@@ -1,6 +1,5 @@
 'use client'
 
-import { ClipboardCheck } from 'lucide-react'
 import { ClearDataButton } from '@/components/ClearDataButton'
 import { EmptyState } from '@/components/EmptyState'
 import { PageHeading } from '@/components/PageHeading'
@@ -45,7 +44,7 @@ export function EnrollmentPanel() {
         <EnrollmentSkeleton />
       ) : cleared ? (
         <EmptyState
-          icon={ClipboardCheck}
+          illustration="empty"
           title="Nenhuma disciplina disponível"
           description="A oferta deste período foi limpa. Recarregue para montar sua grade novamente."
           actionLabel="Recarregar oferta"

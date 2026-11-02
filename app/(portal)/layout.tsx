@@ -4,6 +4,7 @@ import { PortalShell } from './components/PortalShell'
 import { UnsavedChangesProvider } from './components/UnsavedChangesProvider'
 
 export default function PortalLayout({ children }: LayoutProps<'/'>) {
+
   return (
     <SemesterProvider>
       <ToastProvider>

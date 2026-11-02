@@ -1,6 +1,6 @@
 'use client'
 
-import { BookOpen, CalendarX, Eraser, Search, SearchX } from 'lucide-react'
+import { CalendarX, Eraser, Search, SearchX } from 'lucide-react'
 import { ClearDataButton } from '@/components/ClearDataButton'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { EmptyState } from '@/components/EmptyState'
@@ -44,7 +44,7 @@ export function SubjectExplorer() {
         <SubjectsSkeleton />
       ) : empty ? (
         <EmptyState
-          icon={BookOpen}
+          illustration="empty"
           title="Nenhuma disciplina na sua grade"
           description="Você não possui disciplinas neste semestre. Recarregue para ver novamente horários, professores e progresso."
           actionLabel="Recarregar disciplinas"

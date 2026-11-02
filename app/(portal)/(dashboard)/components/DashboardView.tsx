@@ -1,6 +1,5 @@
 'use client'
 
-import { LayoutDashboard } from 'lucide-react'
 import { ClearDataButton } from '@/components/ClearDataButton'
 import { EmptyState } from '@/components/EmptyState'
 import { useDashboardData } from '../hooks/useDashboardData'
@@ -32,7 +31,7 @@ export function DashboardView() {
         <DashboardSkeleton />
       ) : cleared ? (
         <EmptyState
-          icon={LayoutDashboard}
+          illustration="empty"
           title="Nenhum dado para exibir"
           description="O resumo do semestre foi limpo. Recarregue para trazer de volta suas métricas, atalhos e próximos prazos."
           actionLabel="Recarregar dados"

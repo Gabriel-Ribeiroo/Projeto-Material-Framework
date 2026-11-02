@@ -40,7 +40,7 @@ export function GradesPanel() {
         <GradesSkeleton />
       ) : cleared ? (
         <EmptyState
-          icon={BarChart3}
+          illustration="empty"
           title="Seu boletim está vazio"
           description="As notas deste semestre foram limpas. Recarregue para consultar novamente seu desempenho."
           actionLabel="Recarregar boletim"

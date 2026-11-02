@@ -1,9 +1,17 @@
 import { RotateCcw } from 'lucide-react'
 import { ComponentType } from 'react'
 import { Button } from '@/components/Button'
+import { Illustration, IllustrationName } from '@/components/Illustration'
 
-type EmptyStateProps = {
-  icon: ComponentType<{ className?: string }>
+/**
+ * An illustration suits a whole section left without data; a small icon suits
+ * results that come and go while searching or filtering.
+ */
+type EmptyStateVisual =
+  | { icon: ComponentType<{ className?: string }>; illustration?: never }
+  | { illustration: IllustrationName; icon?: never }
+
+type EmptyStateProps = EmptyStateVisual & {
   title: string
   description: string
   actionLabel: string
@@ -15,6 +23,7 @@ type EmptyStateProps = {
 /** Fallback shown in place of a section that has no data to display. */
 export function EmptyState({
   icon: Icon,
+  illustration,
   title,
   description,
   actionLabel,
@@ -23,9 +32,15 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <section className="card animate-fade-up flex flex-col items-center border-dashed px-6 py-14 text-center shadow-none sm:py-16">
-      <span className="grid h-16 w-16 place-items-center rounded-2xl bg-accent text-accent-foreground ring-8 ring-accent/40">
-        <Icon className="h-7 w-7" />
-      </span>
+      {illustration ? (
+        <Illustration name={illustration} className="h-40 w-auto sm:h-48" />
+      ) : (
+        Icon && (
+          <span className="grid h-16 w-16 place-items-center rounded-2xl bg-accent text-accent-foreground ring-8 ring-accent/40">
+            <Icon className="h-7 w-7" />
+          </span>
+        )
+      )}
       <h3 className="mt-6 font-display text-xl font-semibold">{title}</h3>
       <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">{description}</p>
       <Button onClick={onAction} icon={ActionIcon} className="mt-7">
