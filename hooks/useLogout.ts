@@ -1,11 +1,19 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useCallback } from 'react'
-import { useToast } from '@/hooks/useToast'
+import { useSession } from '@/hooks/useSession'
 
-/** Ends the student session. For now it only confirms the action with a notice. */
+/**
+ * Ends the student session right away and goes to the login screen, which
+ * shows the "sessão encerrada" notice (kept in sessionStorage, not the URL).
+ */
 export function useLogout() {
-  const { showToast } = useToast()
+  const router = useRouter()
+  const { signOut } = useSession()
 
-  return useCallback(() => showToast('Sessão encerrada com sucesso.'), [showToast])
+  return useCallback(() => {
+    signOut()
+    router.replace('/login')
+  }, [signOut, router])
 }

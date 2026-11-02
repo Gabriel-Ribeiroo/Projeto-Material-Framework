@@ -1,21 +1,41 @@
-# EduConnect — Refatoração de Interface com Material Design
+# Trilha — Refatoração de Interface com Material Design
 
 **Tela escolhida:** Meu perfil (`/profile`). As melhorias de feedback, carregamento e confirmação também foram aplicadas às telas de Disciplinas e Matrícula, porque usam os mesmos componentes.
 
-Prints: [`screenshots/antes/`](screenshots/antes/) e [`screenshots/depois/`](screenshots/depois/), cada um em desktop 1366×768, tablet 768×1024 e smartphone 360×800, nos modos claro e escuro. Os estados de interação estão em `depois/estado-*.png`.
+**Antes:** o EduConnect original, projeto separado em `../educonnect` (Vite + React). **Depois:** o Trilha, este projeto, que é a refatoração do EduConnect.
+
+Prints: [`screenshots/antes/`](screenshots/antes/) (EduConnect) e [`screenshots/depois/`](screenshots/depois/) (Trilha), cada um em desktop 1366×768, tablet 768×1024 e smartphone 360×800, nos modos claro e escuro. Os estados de interação estão em `antes/estado-*.png` e `depois/estado-*.png`.
+
+> Os prints "escuro" do EduConnect são iguais aos "claro". Isso não é um erro de captura: eles foram tirados com o sistema em modo escuro, e o EduConnect não tem tema escuro. A interface simplesmente ignora a preferência.
+
+### Visão geral
+
+| | Antes (EduConnect) | Depois (Trilha) |
+|---|---|---|
+| **Base** | Vite 5, React 18, Tailwind CSS 3 | Next.js 16, React 19, Tailwind CSS 4, next-themes |
+| **Organização** | Um único `src/App.tsx` com 441 linhas: todas as telas, componentes, dados e lógica no mesmo arquivo | 108 arquivos: 25 componentes globais em `components/`, componentes e hooks por tela em `app/(portal)/<tela>/`, dados em `data/` |
+| **Navegação** | A tela atual fica num `useState`. A URL é sempre `/` | Uma rota por tela (`/profile`, `/subjects`, `/enrollment`…) |
+| **Cores** | Classes fixas (`indigo-600`, `slate-500`…) e valores avulsos no CSS | Tokens de tema em `styles/globals.css`, com modo claro e escuro |
+| **Sessão** | "Sair do sistema" só mostra um aviso | Tela de login e saída de verdade |
 
 ---
 
-## 1. Auditoria da interface
+## 1. Auditoria da interface (EduConnect)
+
+Todos os problemas abaixo foram reproduzidos no EduConnect rodando no navegador.
 
 | # | Problema encontrado | Por que é um problema? | Solução proposta |
 |---|---|---|---|
-| 1 | **"Salvar alterações" não tinha estado de carregamento.** O aviso de sucesso aparecia na hora e o botão continuava clicável. | O usuário não percebe que algo está sendo processado e pode clicar várias vezes, enviando a mesma operação repetidamente. | Botão com indicador circular de progresso (*CircularProgress*), texto "Salvando…" e bloqueio durante a operação (2 s simulados). Os campos também ficam bloqueados. |
-| 2 | **O formulário não tinha validação.** Nome vazio ou e-mail inválido eram "salvos com sucesso". | Dados errados entram no sistema e o usuário recebe uma confirmação falsa. O erro só aparece depois, quando um comunicado não chega. | *TextField* com estado de erro: borda vermelha, ícone e mensagem que explica como corrigir. Asterisco nos campos obrigatórios. Ao tentar salvar com erro, o foco vai para o primeiro campo inválido. |
-| 3 | **O feedback era sempre igual.** O aviso mostrava um ✓ verde até para alertas ("Selecione pelo menos uma disciplina"), não podia ser fechado e, no celular, cobria o menu inferior. | Uma cor ou ícone errado comunica o oposto do que aconteceu. Um aviso sobre a navegação atrapalha o uso. | *Snackbar* com três tons (sucesso, erro, informação), botão de fechar, animação de entrada e saída, e posição acima do menu inferior no celular. |
-| 4 | **Não havia tratamento de erro.** O salvamento nunca falhava e, se falhasse, o usuário não saberia. | Sem uma mensagem clara, o usuário acha que salvou ou perde as alterações. | *Alert* de erro dentro do card, que explica o problema, garante que os dados não foram perdidos e oferece "Tentar novamente". |
-| 5 | **Ações destrutivas eram imediatas, ou não faziam nada.** "Limpar dados" apagava a tela no primeiro clique. O botão "⋯" das disciplinas não tinha função. "Restaurar" descartava a edição sem avisar. | Um clique acidental apaga informação. Um botão que não responde passa a impressão de sistema quebrado. | *Dialog* de confirmação com a ação destrutiva em vermelho e o foco inicial em "Cancelar". O "⋯" abre um menu com "Trancar disciplina", que pede confirmação. "Restaurar" virou "Descartar alterações": só fica ativo quando há algo a descartar e mostra um aviso. |
-| 6 | **Problemas de navegação no celular e por teclado.** O menu lateral fechado continuava recebendo foco pelo TAB e não fechava com ESC. O título no topo quebrava em duas linhas em 360 px. | Quem navega por teclado "entra" num menu invisível. O cabeçalho ocupava espaço demais em telas pequenas. | O menu fechado sai da ordem de foco e fecha com ESC. O título do cabeçalho é truncado com reticências. A busca de disciplinas ocupa a largura toda no celular. |
+| 1 | **"Salvar alterações" não tinha estado de carregamento.** O aviso "Perfil atualizado com sucesso!" aparecia na hora e o botão continuava clicável. | O usuário não percebe que algo está sendo processado e pode clicar várias vezes, enviando a mesma operação repetidamente. | Botão com indicador circular de progresso (*CircularProgress*), texto "Salvando…" e bloqueio durante a operação (2 s simulados). Os campos também ficam bloqueados. |
+| 2 | **O formulário não tinha validação.** Nome vazio e telefone "abc" eram "atualizados com sucesso", e o nome sumia do card do perfil (`antes/estado-validacao-desktop-claro.png`). O e-mail tinha só o balão nativo do navegador, fora do visual da aplicação. | Dados errados entram no sistema e o usuário recebe uma confirmação falsa. O erro só aparece depois, quando um comunicado não chega. | *TextField* com estado de erro: borda vermelha, ícone e mensagem que explica como corrigir. Asterisco nos campos obrigatórios. Ao tentar salvar com erro, o foco vai para o primeiro campo inválido. Máscara no telefone. |
+| 3 | **O feedback era sempre igual e ficava no lugar errado.** O aviso mostrava um ✓ verde até para alertas ("Selecione pelo menos uma disciplina"), não podia ser fechado e sumia sempre em 3 s. No celular, ficava fora do centro e cobria o menu inferior (`antes/estado-alerta-mobile-claro.png`). | Uma cor ou ícone errado comunica o oposto do que aconteceu. Um aviso sobre a navegação atrapalha o uso. | *Snackbar* com três tons (sucesso, erro, informação), botão de fechar, animação de entrada e saída, e posição acima do menu inferior no celular. |
+| 4 | **Não havia tratamento de erro.** Nenhuma ação podia falhar e, se falhasse, o usuário não saberia. | Sem uma mensagem clara, o usuário acha que salvou ou perde as alterações. | *Alert* de erro dentro do card, que explica o problema, garante que os dados não foram perdidos e oferece "Tentar novamente". |
+| 5 | **Botões que não faziam o que prometiam.** O "⋯" das disciplinas não tinha função nem nome para leitor de tela. "Restaurar" ficava sempre ativo e descartava a edição sem avisar. "Continuar matrícula" anunciava uma "próxima etapa" que não existia. "Sair do sistema" mostrava "Sessão encerrada" e o aluno continuava logado. | Um clique acidental apaga informação. Um botão que não responde, ou que diz algo que não aconteceu, passa a impressão de sistema quebrado. | *Dialog* de confirmação com a ação destrutiva em vermelho e o foco inicial em "Cancelar". O "⋯" abre um menu com "Trancar disciplina", que pede confirmação. "Restaurar" virou "Descartar alterações": só fica ativo quando há algo a descartar. A matrícula mostra o envio e o resultado. "Sair" encerra a sessão e volta para o login. |
+| 6 | **Sem estado vazio.** Uma busca de disciplina sem resultado deixava a área em branco, sem nenhuma mensagem (`antes/estado-busca-vazia-desktop-claro.png`). | O usuário não sabe se a busca falhou, se a página ainda está carregando ou se não há nada para mostrar. | *Empty state* com ilustração (tela inteira sem dados) ou ícone (busca e filtro sem resultado), explicação e ação para sair dele ("Limpar busca", "Recarregar"). Prints: `depois/estado-vazio-*.png`. |
+| 7 | **Problemas de navegação por teclado.** No celular, o primeiro TAB entrava no menu lateral fechado (invisível). Notificações e menu do perfil não fechavam com ESC nem com clique fora. Os itens do menu lateral e do menu inferior não tinham contorno de foco. O "✕" de fechar o menu aparecia também no desktop, onde não fazia nada. | Quem navega por teclado "entra" num menu invisível, não sabe onde está e não consegue fechar um painel aberto. | O menu fechado sai da ordem de foco e fecha com ESC. Menus fecham com ESC e clique fora. Todo controle tem contorno de foco visível. Link "Pular para o conteúdo". |
+| 8 | **As telas não tinham endereço.** A tela atual ficava só na memória. Recarregar sempre voltava ao Dashboard, e o botão "voltar" do navegador saía do site. | O usuário perde o lugar ao recarregar e não consegue compartilhar nem favoritar uma tela. | Uma rota por tela, com o item ativo do menu vindo da URL. |
+| 9 | **Cores fixas e nenhum modo escuro.** Cores escritas direto nas classes (`indigo-600`, `violet-500`, `slate-*`), fundo da página `#f32105` e barra de rolagem `#046ff1` fixos no CSS. Nenhum suporte a tema escuro. | Mudar uma cor exige caçar dezenas de classes. Quem usa o sistema no escuro recebe uma tela clara e ofuscante. | Tokens de tema (`--primary`, `--muted`, `--destructive`…) usados por todos os componentes, com valores para claro e escuro e alternância Claro / Escuro / Sistema. |
+| 10 | **Animações longas e sem respeito a `prefers-reduced-motion`.** Entradas de 450 a 500 ms em todos os cards, mesmo com a redução de movimento ativa no sistema. | Animações lentas atrasam a leitura, e o movimento pode causar desconforto em pessoas sensíveis a ele. | Transições de 150 a 300 ms (`ease-out` na entrada, `ease-in` na saída), desligadas quando o sistema pede menos movimento. |
 
 ---
 
@@ -44,7 +64,7 @@ Prints: [`screenshots/antes/`](screenshots/antes/) e [`screenshots/depois/`](scr
 
 ### Sobre a biblioteca
 
-O exemplo da atividade usa MUI. O EduConnect já tinha um design system próprio com Tailwind CSS e tokens de tema. Por isso, os componentes Material (Button, Dialog, Snackbar, Alert, CircularProgress, TextField) foram implementados sobre esses tokens, sem misturar duas bibliotecas de estilo. O princípio cobrado na atividade é o mesmo: nenhuma cor fixa espalhada pelo código, e todas as telas usam os mesmos componentes.
+O exemplo da atividade usa MUI. O EduConnect já usava Tailwind CSS, mas com as cores escritas direto em cada classe. Na refatoração, o Trilha ganhou um design system próprio, com tokens de tema sobre o Tailwind. Os componentes Material (Button, Dialog, Snackbar, Alert, CircularProgress, TextField) foram implementados sobre esses tokens, sem misturar duas bibliotecas de estilo. O princípio cobrado na atividade é o mesmo: nenhuma cor fixa espalhada pelo código, e todas as telas usam os mesmos componentes.
 
 ---
 
