@@ -5,13 +5,26 @@ import { Header } from '@/components/Header'
 import { MobileNav } from '@/components/MobileNav'
 import { Sidebar } from '@/components/Sidebar'
 import { SkipLink } from '@/components/SkipLink'
+import { Spinner } from '@/components/Spinner'
+import { useAuthGuard } from '../hooks/useAuthGuard'
 import { usePortalShell } from '../hooks/usePortalShell'
 
 const MAIN_ID = 'conteudo'
 
 /** Chrome shared by every page: sidebar, header and mobile navigation. */
 export function PortalShell({ children }: { children: ReactNode }) {
+  const { authorized } = useAuthGuard()
   const { title, sidebarOpen, openSidebar, closeSidebar } = usePortalShell()
+
+  // Nothing of the portal is shown until a session is confirmed.
+  if (!authorized) {
+    return (
+      <div role="status" className="grid min-h-screen place-items-center bg-background text-primary">
+        <Spinner className="h-8 w-8" />
+        <span className="sr-only">Verificando sessão…</span>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background">

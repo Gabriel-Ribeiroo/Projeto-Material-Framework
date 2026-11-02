@@ -2,7 +2,7 @@
 
 import { Pencil } from 'lucide-react'
 import { Button } from '@/components/Button'
-import { student } from '@/data/student'
+import { useCurrentStudent } from '@/hooks/useCurrentStudent'
 import { useToast } from '@/hooks/useToast'
 
 type ProfileCardProps = {
@@ -12,6 +12,7 @@ type ProfileCardProps = {
 
 export function ProfileCard({ name, course }: ProfileCardProps) {
   const { showToast } = useToast()
+  const student = useCurrentStudent()
 
   return (
     <section className="card h-fit p-6 text-center">

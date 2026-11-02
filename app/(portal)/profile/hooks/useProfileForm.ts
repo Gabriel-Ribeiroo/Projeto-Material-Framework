@@ -1,7 +1,8 @@
 'use client'
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react'
-import { student } from '@/data/student'
+import { useCurrentStudent } from '@/hooks/useCurrentStudent'
+import { useSession } from '@/hooks/useSession'
 import { SIMULATED_SAVE_DELAY, simulateRequest, useSimulatedFetch } from '@/hooks/useSimulatedFetch'
 import { useToast } from '@/hooks/useToast'
 import { useUnsavedChanges } from '../../hooks/useUnsavedChanges'
@@ -20,14 +21,6 @@ export type EditableField = Exclude<keyof ProfileFormValues, 'course'>
 export type ProfileFormErrors = Partial<Record<EditableField, string>>
 
 const editableFields: EditableField[] = ['name', 'email', 'phone', 'city']
-
-const initialForm: ProfileFormValues = {
-  name: student.name,
-  email: student.email,
-  phone: student.phone,
-  city: student.city,
-  course: student.course,
-}
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -69,6 +62,15 @@ function validate(form: ProfileFormValues): ProfileFormErrors {
  */
 export function useProfileForm() {
   const { showToast } = useToast()
+  const { updateSession } = useSession()
+  const student = useCurrentStudent()
+  const initialForm: ProfileFormValues = {
+    name: student.name,
+    email: student.email,
+    phone: student.phone,
+    city: student.city,
+    course: student.course,
+  }
   const record = useSimulatedFetch(initialForm)
   const { reload } = record
   const [form, setForm] = useState<ProfileFormValues>(initialForm)
@@ -150,10 +152,12 @@ export function useProfileForm() {
     }
 
     setSaved(form)
+    // Name and e-mail are shown across the portal, so the session follows the edit.
+    updateSession({ name: form.name.trim(), email: form.email.trim() })
     setTouched({})
     setSubmitted(false)
     showToast('Alterações salvas com sucesso!')
-  }, [allErrors, form, showToast])
+  }, [allErrors, form, showToast, updateSession])
 
   const submit = useCallback(
     (event: FormEvent) => {

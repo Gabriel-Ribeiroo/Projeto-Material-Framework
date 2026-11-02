@@ -2,11 +2,12 @@
 
 import { ArrowRight, Sparkles } from 'lucide-react'
 import Link from 'next/link'
-import { student } from '@/data/student'
+import { useCurrentStudent } from '@/hooks/useCurrentStudent'
 import { useSemester } from '@/hooks/useSemester'
 
 export function WelcomeBanner() {
   const { semester } = useSemester()
+  const student = useCurrentStudent()
   const firstName = student.name.split(' ')[0]
 
   return (

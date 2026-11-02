@@ -1,8 +1,8 @@
 import { Mail, MapPin, Phone, RotateCcw, Save, User } from 'lucide-react'
 import { Alert } from '@/components/Alert'
 import { Button } from '@/components/Button'
+import { Field } from '@/components/Field'
 import { EditableField, ProfileFormErrors, ProfileFormValues } from '../hooks/useProfileForm'
-import { Field } from './Field'
 
 type PersonalDataCardProps = {
   form: ProfileFormValues

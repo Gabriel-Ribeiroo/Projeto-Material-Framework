@@ -4,8 +4,8 @@ import { GraduationCap, LogOut, ShieldCheck, X } from 'lucide-react'
 import Link from 'next/link'
 import { IconButton } from '@/components/IconButton'
 import { navItems } from '@/data/navigation'
-import { student } from '@/data/student'
 import { useActiveRoute } from '@/hooks/useActiveRoute'
+import { useCurrentStudent } from '@/hooks/useCurrentStudent'
 import { useLogout } from '@/hooks/useLogout'
 
 type SidebarProps = {
@@ -16,6 +16,7 @@ type SidebarProps = {
 export function Sidebar({ open, onClose }: SidebarProps) {
   const isActive = useActiveRoute()
   const logout = useLogout()
+  const student = useCurrentStudent()
 
   return (
     <>
@@ -41,7 +42,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               <GraduationCap className="h-6 w-6" />
             </span>
             <span className="text-left">
-              <span className="block font-display text-lg font-semibold">EduConnect</span>
+              <span className="block font-display text-lg font-semibold">Trilha</span>
               <span className="block text-xs text-sidebar-muted-foreground">Portal acadêmico</span>
             </span>
           </Link>

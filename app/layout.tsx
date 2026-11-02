@@ -21,8 +21,8 @@ const sourceSerif = Source_Serif_4({
 
 export const metadata: Metadata = {
   title: {
-    default: "EduConnect · Portal acadêmico",
-    template: "%s · EduConnect",
+    default: "Trilha · Portal acadêmico",
+    template: "%s · Trilha",
   },
   description: "Portal acadêmico do aluno: notas, disciplinas, matrícula e dados de perfil.",
 }

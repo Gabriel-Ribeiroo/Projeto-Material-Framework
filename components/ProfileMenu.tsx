@@ -3,13 +3,14 @@
 import { ChevronDown, LogOut, User } from 'lucide-react'
 import { Popover } from '@/components/Popover'
 import { PopoverItem } from '@/components/PopoverItem'
-import { student } from '@/data/student'
+import { useCurrentStudent } from '@/hooks/useCurrentStudent'
 import { useDismissableMenu } from '@/hooks/useDismissableMenu'
 import { useLogout } from '@/hooks/useLogout'
 
 export function ProfileMenu() {
   const { open, containerRef, toggle, close } = useDismissableMenu<HTMLDivElement>()
   const logout = useLogout()
+  const student = useCurrentStudent()
 
   return (
     <div ref={containerRef} className="relative ml-1">

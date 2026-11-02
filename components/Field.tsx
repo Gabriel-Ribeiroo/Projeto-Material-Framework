@@ -1,5 +1,5 @@
 import { AlertCircle } from 'lucide-react'
-import { ComponentProps, ComponentType, useId } from 'react'
+import { ComponentProps, ComponentType, ReactNode, useId } from 'react'
 
 type FieldProps = {
   label: string
@@ -16,6 +16,8 @@ type FieldProps = {
   inputMode?: ComponentProps<'input'>['inputMode']
   maxLength?: number
   placeholder?: string
+  /** Control pinned to the right edge of the input, e.g. a show-password toggle. */
+  trailing?: ReactNode
 }
 
 export function Field({
@@ -32,6 +34,7 @@ export function Field({
   inputMode,
   maxLength,
   placeholder,
+  trailing,
 }: FieldProps) {
   const errorId = useId()
 
@@ -62,8 +65,9 @@ export function Field({
           placeholder={placeholder}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? errorId : undefined}
-          className="focus-ring w-full rounded-xl border border-border bg-card py-3 pl-10 pr-3 text-sm font-medium text-foreground transition duration-200 hover:border-input disabled:cursor-not-allowed disabled:opacity-60 aria-invalid:border-destructive aria-invalid:focus-visible:outline-destructive"
+          className={`focus-ring w-full rounded-xl border border-border bg-card py-3 pl-10 text-sm font-medium text-foreground transition duration-200 hover:border-input disabled:cursor-not-allowed disabled:opacity-60 aria-invalid:border-destructive aria-invalid:focus-visible:outline-destructive ${trailing ? 'pr-12' : 'pr-3'}`}
         />
+        {trailing && <span className="absolute right-1.5 top-1/2 -translate-y-1/2">{trailing}</span>}
       </span>
       {error && (
         <span id={errorId} className="animate-fade-in mt-1.5 flex items-start gap-1.5 text-xs font-medium text-destructive">
