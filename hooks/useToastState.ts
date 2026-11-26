@@ -22,6 +22,10 @@ export type ToastState = {
   message: string
   tone: ToastTone
   action?: ToastAction
+  /** Total time on screen, in ms. Drives the countdown bar. */
+  duration: number
+  /** True while the student hovers or focuses the notice: the countdown stops. */
+  paused: boolean
   leaving: boolean
 }
 
@@ -30,6 +34,9 @@ export function useToastState() {
   const [toast, setToast] = useState<ToastState | null>(null)
   const hideTimeout = useRef<number | undefined>(undefined)
   const removeTimeout = useRef<number | undefined>(undefined)
+  /** Time left before the notice closes, and when that countdown last (re)started. */
+  const remaining = useRef(0)
+  const startedAt = useRef(0)
 
   const dismiss = useCallback(() => {
     window.clearTimeout(hideTimeout.current)
@@ -37,15 +44,47 @@ export function useToastState() {
     removeTimeout.current = window.setTimeout(() => setToast(null), EXIT_DURATION)
   }, [])
 
+  const startCountdown = useCallback(
+    (ms: number) => {
+      remaining.current = ms
+      startedAt.current = Date.now()
+      hideTimeout.current = window.setTimeout(dismiss, ms)
+    },
+    [dismiss],
+  )
+
   const showToast = useCallback(
     (message: string, tone: ToastTone = 'success', action?: ToastAction) => {
       window.clearTimeout(hideTimeout.current)
       window.clearTimeout(removeTimeout.current)
-      setToast(current => ({ id: (current?.id ?? 0) + 1, message, tone, action, leaving: false }))
-      hideTimeout.current = window.setTimeout(dismiss, action ? TOAST_WITH_ACTION_DURATION : TOAST_DURATION)
+      const duration = action ? TOAST_WITH_ACTION_DURATION : TOAST_DURATION
+      setToast(current => ({
+        id: (current?.id ?? 0) + 1,
+        message,
+        tone,
+        action,
+        duration,
+        paused: false,
+        leaving: false,
+      }))
+      startCountdown(duration)
     },
-    [dismiss],
+    [startCountdown],
   )
+
+  /** Stops the countdown while the student reads or reaches for the action. */
+  const pause = useCallback(() => {
+    if (!toast || toast.paused || toast.leaving) return
+    window.clearTimeout(hideTimeout.current)
+    remaining.current = Math.max(0, remaining.current - (Date.now() - startedAt.current))
+    setToast(current => current && { ...current, paused: true })
+  }, [toast])
+
+  const resume = useCallback(() => {
+    if (!toast || !toast.paused || toast.leaving) return
+    setToast(current => current && { ...current, paused: false })
+    startCountdown(remaining.current)
+  }, [toast, startCountdown])
 
   /** Runs the notice's action. The action may show a new notice, so this one only closes if it did not. */
   const runAction = useCallback(() => {
@@ -64,5 +103,5 @@ export function useToastState() {
     [],
   )
 
-  return { toast, showToast, dismiss, runAction }
+  return { toast, showToast, dismiss, runAction, pause, resume }
 }

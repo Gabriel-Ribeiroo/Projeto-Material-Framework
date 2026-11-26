@@ -12,13 +12,22 @@ export const ToastContext = createContext<ToastContextValue | null>(null)
 
 /** Exposes `showToast` to the whole tree and renders the current notice. */
 export function ToastProvider({ children }: { children: ReactNode }) {
-  const { toast, showToast, dismiss, runAction } = useToastState()
+  const { toast, showToast, dismiss, runAction, pause, resume } = useToastState()
   const value = useMemo(() => ({ showToast }), [showToast])
 
   return (
     <ToastContext.Provider value={value}>
       {children}
-      {toast && <Toast key={toast.id} toast={toast} onDismiss={dismiss} onAction={runAction} />}
+      {toast && (
+        <Toast
+          key={toast.id}
+          toast={toast}
+          onDismiss={dismiss}
+          onAction={runAction}
+          onPause={pause}
+          onResume={resume}
+        />
+      )}
     </ToastContext.Provider>
   )
 }

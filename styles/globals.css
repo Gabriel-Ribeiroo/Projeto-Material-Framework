@@ -355,6 +355,20 @@
   }
 }
 
+/* Snackbar countdown: the bar empties over the notice's lifetime (set via --toast-duration). */
+@keyframes toast-countdown {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+.toast-countdown {
+  animation: toast-countdown var(--toast-duration, 4000ms) linear both;
+}
+
 @layer base {
   /* Without this rule Tailwind v4 uses currentColor as the default border. */
   *,
@@ -420,5 +434,11 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  /* The countdown carries information (time left to undo), not decoration:
+     it is a slow linear shrink, so it keeps its real duration. */
+  .toast-countdown {
+    animation-duration: var(--toast-duration, 4000ms) !important;
   }
 }
